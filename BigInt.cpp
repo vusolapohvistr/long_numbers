@@ -18,11 +18,28 @@ BigInt::BigInt(std::string &number) {
             value.push_back(std::abs(std::stoi(number.substr(0, i))));
         }
     }
+    if (mod.value[mod.value.size() - 1] != 0) {
+        *this = *this % mod;
+    }
 }
 
 BigInt::BigInt(std::vector<int> &number, bool is_negativ) {
     value = number;
     is_negative = is_negativ;
+    if (mod.value[mod.value.size() - 1] != 0) {
+        *this = *this % mod;
+    }
+}
+
+BigInt::BigInt(int arg) {
+    if (arg < 0) {
+        is_negative = true;
+        arg *= -1;
+    }
+    while (arg > 0) {
+        value.push_back(arg % basis);
+        arg /= basis;
+    }
 }
 
 std::string BigInt::to_string() {
@@ -91,6 +108,8 @@ BigInt BigInt::operator+(BigInt const &arg) const {
 
     BigInt a = BigInt(answer, this->is_negative);
 
+    if (mod.value[mod.value.size() - 1] != 0 && a > mod) a = a - mod;
+
     return a;
 }
 
@@ -138,6 +157,7 @@ BigInt BigInt::operator-(BigInt const &arg) const {
     for (int i = answer.size() - 1; answer[i] == 0 && i!=0; i--) answer.pop_back();
 
     BigInt a = BigInt(answer, *this == smaller);
+    if (mod.value[mod.value.size() - 1] != 0 && a.is_negative) a = a + mod;
 
     return a;
 }
@@ -167,9 +187,9 @@ bool BigInt::operator==(BigInt const &arg) const {
 
 BigInt BigInt::operator*(BigInt const &arg) const {
     bool is_negativ = (this->is_negative || arg.is_negative) && (this->is_negative != arg.is_negative);
-    std::string l = "0";
 
-    BigInt answer = BigInt(l);
+    BigInt answer = BigInt(0);
+    if (arg == answer || *this == answer) return answer;
 
     for (int i = 0; i < this->value.size(); i++) {
         std::vector<int> step_value;
@@ -185,12 +205,16 @@ BigInt BigInt::operator*(BigInt const &arg) const {
     }
 
     answer.is_negative = is_negativ;
+    if (mod.value[mod.value.size() - 1] != 0) {
+        answer = answer - (answer / mod) * mod;
+    }
+
     return answer;
 }
 
 BigInt BigInt::operator/(BigInt const &arg) const {
     bool is_negativ = (this->is_negative || arg.is_negative) && (this->is_negative != arg.is_negative);
-    std::vector<int> answer; //non-reversed
+    std::vector<int> answer = std::vector<int> (1,0); //non-reversed
     BigInt copy_arg = arg;
     copy_arg.is_negative = false;
     BigInt copy = *this;
@@ -199,6 +223,10 @@ BigInt BigInt::operator/(BigInt const &arg) const {
     if (arg == *this) {
         answer.push_back(1);
         return BigInt(answer, is_negativ);
+    }
+
+    if (mod.value[mod.value.size() - 1] != 0) {
+        return *this * extended_euclid(arg, mod);
     }
 
     if (copy_arg > copy) {
@@ -297,8 +325,9 @@ BigInt BigInt::operator/(BigInt const &arg) const {
 }
 
 BigInt BigInt::operator%(BigInt const &arg) const {
-    BigInt answer = *this - (arg * (*this / arg));
-    return answer;
+    BigInt copy = *this;
+    while (copy > arg || copy == arg) copy = copy - arg;
+    return copy;
 }
 
 BigInt BigInt::sqrt() {
@@ -313,3 +342,40 @@ BigInt BigInt::sqrt() {
     return x_next;
 }
 
+BigInt BigInt::euclid(BigInt &a, BigInt &b) {
+    BigInt X = a;
+    BigInt Y = b;
+    BigInt T = b;
+    while (Y.value[Y.value.size() - 1] != 0) {
+        T = Y;
+        Y = Y % X;
+        X = T;
+    }
+    return X;
+}
+
+BigInt BigInt::extended_euclid(BigInt const &b, BigInt const &m)  const{
+    BigInt x[] = {BigInt(1), BigInt(0), mod};
+    BigInt y[] = {BigInt(0), BigInt(1), b};
+    while (true) {
+        if (y[2] == BigInt(0)) return BigInt(0);
+        if (y[2] == BigInt(1)) return y[1];
+        BigInt g = x[2] / y[2];
+        BigInt t[] = {x[0] - g * y[0], x[1] - g * y[1], x[2] - g * y[2]};
+        x[0] = y[0]; x[1] = y[1]; x[2] = y[2];
+        y[0] = t[0]; y[1] = t[1]; y[2] = t[2];
+    }
+}
+
+void BigInt::set_mod(BigInt const &arg) {
+    if (arg.is_negative)
+        return;
+    mod = arg;
+}
+
+BigInt::BigInt() {
+    is_negative = false;
+    value = std::vector<int> (1,0);
+}
+
+BigInt BigInt::mod = BigInt();

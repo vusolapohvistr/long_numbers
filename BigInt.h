@@ -12,9 +12,11 @@ class BigInt {
 private:
     bool is_negative;
     std::vector<int> value; // reversed
-    static BigInt mod;
 public:
+    static BigInt mod;
     explicit BigInt (std::string &number);
+    explicit BigInt (int arg);
+    explicit BigInt ();
     BigInt (std::vector<int> &number, bool is_negative);
     BigInt operator + (BigInt const &arg) const;
     BigInt operator - (BigInt const &arg) const;
@@ -26,6 +28,9 @@ public:
     bool operator == (BigInt const &arg) const;
     std::string to_string();
     BigInt sqrt();
+    BigInt euclid (BigInt &a, BigInt &b);
+    BigInt extended_euclid (BigInt const &b, BigInt const &m) const;
+    static void set_mod(BigInt const &arg);
 };
 
 

@@ -10,10 +10,18 @@ int main() {
 
     while (arg1 != "stop") {
         std::cout << "To close da program write quit\n";
-        std::cout << "First argument\n";
-
+        std::cout << "First argument or setmod\n";
         std::cin >> arg1;
-        std::cout << "Enter operator: +, -, *, /, %, >, <, ==, sqrt";
+        if (arg1 == "quit") break;
+        if (arg1 == "setmod") {
+            std::cout << "mod = ?\n";
+            std::cin >> arg2;
+            BigInt mod = BigInt(arg2);
+            BigInt::set_mod(mod);
+            std::cout << "mod" << (arg2[0] == '-' ? "0" : arg2) << std::endl;
+            continue;
+        }
+        std::cout << "Enter operator: +, -, *, /, %, >, <, ==, sqrt\n";
         std::cin >> op;
         if (op == "sqrt") {
             BigInt arg = BigInt(arg1).sqrt();
