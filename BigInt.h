@@ -12,6 +12,7 @@ class BigInt {
 private:
     bool is_negative;
     std::vector<int> value; // reversed
+    static BigInt mod;
 public:
     explicit BigInt (std::string &number);
     BigInt (std::vector<int> &number, bool is_negative);
