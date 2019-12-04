@@ -17,19 +17,21 @@ public:
     explicit BigInt (std::string &number);
     explicit BigInt (int arg);
     explicit BigInt ();
+    static BigInt chinese_tea(const std::vector<BigInt> &r, const std::vector<BigInt> &m);
     BigInt (std::vector<int> &number, bool is_negative);
     BigInt operator + (BigInt const &arg) const;
     BigInt operator - (BigInt const &arg) const;
     BigInt operator * (BigInt const &arg) const;
     BigInt operator / (BigInt const &arg) const;
     BigInt operator % (BigInt const &arg) const;
+    BigInt operator ^ (BigInt const &arg) const;
     bool operator > (BigInt const &arg) const;
     bool operator < (BigInt const &arg) const;
     bool operator == (BigInt const &arg) const;
-    std::string to_string();
+    std::string to_string() const;
     BigInt sqrt();
     BigInt euclid (BigInt &a, BigInt &b);
-    BigInt extended_euclid (BigInt const &b, BigInt const &m) const;
+    static BigInt extended_euclid (BigInt const &b, BigInt const &m);
     static void set_mod(BigInt const &arg);
 };
 

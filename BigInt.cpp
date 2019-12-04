@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <cmath>
+#include <stdexcept>
+#include <iostream>
 #include "BigInt.h"
 
 
@@ -42,7 +44,7 @@ BigInt::BigInt(int arg) {
     }
 }
 
-std::string BigInt::to_string() {
+std::string BigInt::to_string() const {
     std::string answer = this->is_negative ? "-" : "";
 
     answer.append(std::to_string(value[this->value.size() - 1]));
@@ -354,7 +356,7 @@ BigInt BigInt::euclid(BigInt &a, BigInt &b) {
     return X;
 }
 
-BigInt BigInt::extended_euclid(BigInt const &b, BigInt const &m)  const{
+BigInt BigInt::extended_euclid(BigInt const &b, BigInt const &m) {
     BigInt x[] = {BigInt(1), BigInt(0), mod};
     BigInt y[] = {BigInt(0), BigInt(1), b};
     while (true) {
@@ -379,3 +381,49 @@ BigInt::BigInt() {
 }
 
 BigInt BigInt::mod = BigInt();
+
+BigInt BigInt::operator^(BigInt const &arg) const {
+    int argument = 0;
+    try {
+        std::string s = arg.to_string();
+        argument = std::stoi(s);
+    } catch (std::out_of_range a) {
+        std::cout << a.what();
+    }
+    BigInt answer = *this;
+    short count_iterations_multiply = 0;
+    while (argument > 0) {
+        int previous_argument = argument;
+        argument = argument >> 1;
+        argument = argument << 1;
+        if (previous_argument != argument) {
+            BigInt temp_multiplier = *this;
+            for (int i = 0; i < count_iterations_multiply; i++) {
+                temp_multiplier = temp_multiplier * temp_multiplier;
+            }
+            answer = answer * temp_multiplier;
+        }
+        count_iterations_multiply++;
+        argument = argument >> 1;
+    }
+    return answer / *this;
+}
+
+BigInt BigInt::chinese_tea(const std::vector<BigInt> &r, const std::vector<BigInt> &m) {
+    BigInt x = BigInt(0);
+    BigInt M = BigInt(1);
+    for (int i = 0; i < m.size(); i++) {
+        M = M * m[i];
+    }
+    std::vector<BigInt> y = std::vector<BigInt> (m.size(), BigInt(0));
+    std::vector<BigInt> s = std::vector<BigInt> (m.size(), BigInt(0));
+    std::vector<BigInt> c = std::vector<BigInt> (m.size(), BigInt(0));
+    for (int i = 0; i < m.size(); i++) {
+        y[i] = M / m[i];
+        BigInt::set_mod(m[i]);
+        s[i] = BigInt::extended_euclid(y[i], m[i]);
+        c[i] = r[i] * s[i];
+        x = x + c[i] * y[i];
+    }
+    return x;
+}

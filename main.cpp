@@ -2,6 +2,7 @@
 #include "BigInt.h"
 
 void calc (std::string &op, std::string &arg1, std::string &arg2);
+std::vector<BigInt> stobi ();
 
 int main() {
     std::string arg1;
@@ -10,9 +11,16 @@ int main() {
 
     while (arg1 != "stop") {
         std::cout << "To close da program write quit\n";
-        std::cout << "First argument or setmod\n";
+        std::cout << "First argument or setmod or china\n";
         std::cin >> arg1;
         if (arg1 == "quit") break;
+        if (arg1 == "china") {
+            std::vector<BigInt> r = stobi();
+            std::vector<BigInt> m = stobi();
+            BigInt x = BigInt::chinese_tea(r, m);
+            std::cout << x.to_string();
+            continue;
+        }
         if (arg1 == "setmod") {
             std::cout << "mod = ?\n";
             std::cin >> arg2;
@@ -21,7 +29,7 @@ int main() {
             std::cout << "mod" << (arg2[0] == '-' ? "0" : arg2) << std::endl;
             continue;
         }
-        std::cout << "Enter operator: +, -, *, /, %, >, <, ==, sqrt\n";
+        std::cout << "Enter operator: +, -, *, /, %, >, <, ==, ^, sqrt\n";
         std::cin >> op;
         if (op == "sqrt") {
             BigInt arg = BigInt(arg1).sqrt();
@@ -43,7 +51,19 @@ void calc (std::string &op, std::string &arg1, std::string &arg2) {
     if (op == "*") std::cout << (a * b).to_string() << std::endl;
     if (op == "/") std::cout << (a / b).to_string() << std::endl;
     if (op == "%") std::cout << (a % b).to_string() << std::endl;
+    if (op == "^") std::cout << (a ^ b).to_string() << std::endl;
     if (op == "<") std::cout << (a < b) << std::endl;
     if (op == ">") std::cout << (a > b) << std::endl;
     if (op == "==") std::cout << (a == b) << std::endl;
+}
+
+std::vector<BigInt> stobi () {
+    std::cout << "enter args one by 1, end to end";
+    std::string argS = "";
+    std::vector<BigInt> answer;
+    do {
+        std::cin >> argS;
+        answer.push_back(BigInt(argS));
+    } while (argS != "stop");
+    return answer;
 }
