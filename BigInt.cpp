@@ -37,6 +37,8 @@ BigInt::BigInt(int arg) {
     if (arg < 0) {
         is_negative = true;
         arg *= -1;
+    } else {
+        is_negative = false;
     }
     while (arg > 0) {
         value.push_back(arg % basis);
@@ -413,7 +415,7 @@ BigInt BigInt::chinese_tea(const std::vector<BigInt> &r, const std::vector<BigIn
     BigInt x = BigInt(0);
     BigInt M = BigInt(1);
     for (int i = 0; i < m.size(); i++) {
-        M = M * m[i];
+        M = M * (m[i]);
     }
     std::vector<BigInt> y = std::vector<BigInt> (m.size(), BigInt(0));
     std::vector<BigInt> s = std::vector<BigInt> (m.size(), BigInt(0));

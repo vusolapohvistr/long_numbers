@@ -58,12 +58,13 @@ void calc (std::string &op, std::string &arg1, std::string &arg2) {
 }
 
 std::vector<BigInt> stobi () {
-    std::cout << "enter args one by 1, end to end";
+    std::cout << "enter args one by 1, end to end"<<std::endl;
     std::string argS = "";
     std::vector<BigInt> answer;
     do {
         std::cin >> argS;
+        if (argS == "stop") break;
         answer.push_back(BigInt(argS));
-    } while (argS != "stop");
+    } while (true);
     return answer;
 }
