@@ -34,6 +34,9 @@ BigInt::BigInt(std::vector<int> &number, bool is_negativ) {
 }
 
 BigInt::BigInt(int arg) {
+    if (arg == 0) {
+        value = std::vector<int> (1,0);
+    }
     if (arg < 0) {
         is_negative = true;
         arg *= -1;
